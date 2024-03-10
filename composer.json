@@ -1,6 +1,6 @@
 {
-    "name": "yswery/dns",
-    "description": "A DNS server implementation in pure PHP.",
+    "name": "gekkone/php-dns-server",
+    "description": "Forked from yswery/dns. A DNS server implementation in pure PHP.",
     "require-dev": {
         "phpunit/phpunit": "~7.3",
         "php-coveralls/php-coveralls": "~2.1",
