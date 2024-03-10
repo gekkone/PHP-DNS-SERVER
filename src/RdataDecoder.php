@@ -19,16 +19,17 @@ class RdataDecoder
      * @var array
      */
     private static $methodMap = [
-        RecordTypeEnum::TYPE_A => 'a',
-        RecordTypeEnum::TYPE_AAAA => 'a',
+        RecordTypeEnum::TYPE_A     => 'a',
+        RecordTypeEnum::TYPE_AAAA  => 'a',
         RecordTypeEnum::TYPE_CNAME => 'cname',
         RecordTypeEnum::TYPE_DNAME => 'cname',
-        RecordTypeEnum::TYPE_NS => 'cname',
-        RecordTypeEnum::TYPE_PTR => 'cname',
-        RecordTypeEnum::TYPE_SOA => 'soa',
-        RecordTypeEnum::TYPE_MX => 'mx',
-        RecordTypeEnum::TYPE_TXT => 'txt',
-        RecordTypeEnum::TYPE_SRV => 'srv',
+        RecordTypeEnum::TYPE_NS    => 'cname',
+        RecordTypeEnum::TYPE_PTR   => 'cname',
+        RecordTypeEnum::TYPE_SOA   => 'soa',
+        RecordTypeEnum::TYPE_MX    => 'mx',
+        RecordTypeEnum::TYPE_TXT   => 'txt',
+        RecordTypeEnum::TYPE_SRV   => 'srv',
+        RecordTypeEnum::TYPE_CAA   => 'caa',
     ];
 
     /**
@@ -136,6 +137,25 @@ class RdataDecoder
         $offset = 6;
         $values = unpack('npriority/nweight/nport', $rdata);
         $values['target'] = Decoder::decodeDomainName($rdata, $offset);
+
+        return $values;
+    }
+
+    public static function caa(string $rdata): array
+    {
+        $offset = 0;
+        $values = [];
+
+        $values['flag'] = (ord($rdata[$offset]));
+        ++$offset;
+
+        $tagLen = ord($rdata[$offset]);
+        ++$offset;
+        $values['tag'] = substr($rdata, $offset, $tagLen);
+        $offset += $tagLen;
+
+        $valueLen = ($rdLength ?? strlen($rdata)) - 2 - $tagLen;
+        $values['values'] = substr($rdata, $offset, $valueLen);
 
         return $values;
     }

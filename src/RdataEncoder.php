@@ -16,16 +16,17 @@ use yswery\DNS\Resolver\ArrayRdata;
 class RdataEncoder
 {
     private static $methodMap = [
-        RecordTypeEnum::TYPE_A => 'a',
-        RecordTypeEnum::TYPE_AAAA => 'a',
+        RecordTypeEnum::TYPE_A     => 'a',
+        RecordTypeEnum::TYPE_AAAA  => 'a',
         RecordTypeEnum::TYPE_CNAME => 'cname',
         RecordTypeEnum::TYPE_DNAME => 'cname',
-        RecordTypeEnum::TYPE_NS => 'cname',
-        RecordTypeEnum::TYPE_PTR => 'cname',
-        RecordTypeEnum::TYPE_SOA => 'soa',
-        RecordTypeEnum::TYPE_MX => 'mx',
-        RecordTypeEnum::TYPE_TXT => 'txt',
-        RecordTypeEnum::TYPE_SRV => 'srv',
+        RecordTypeEnum::TYPE_NS    => 'cname',
+        RecordTypeEnum::TYPE_PTR   => 'cname',
+        RecordTypeEnum::TYPE_SOA   => 'soa',
+        RecordTypeEnum::TYPE_MX    => 'mx',
+        RecordTypeEnum::TYPE_TXT   => 'txt',
+        RecordTypeEnum::TYPE_SRV   => 'srv',
+        RecordTypeEnum::TYPE_CAA   => 'caa'
     ];
 
     /**
@@ -134,7 +135,15 @@ class RdataEncoder
      */
     public static function srv(array $rdata): string
     {
-        return pack('nnn', (int) $rdata['priority'], (int) $rdata['weight'], (int) $rdata['port']).
-            Encoder::encodeDomainName($rdata['target']);
+        return pack('nnn', (int)$rdata['priority'], (int)$rdata['weight'], (int)$rdata['port'])
+            . Encoder::encodeDomainName($rdata['target']);
+    }
+
+    public static function caa(array $rdata): string
+    {
+        return chr($rdata['flag'])
+            . chr(strlen($rdata['tag']))
+            . $rdata['tag']
+            . $rdata['value'];
     }
 }
