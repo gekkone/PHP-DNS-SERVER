@@ -25,8 +25,17 @@
         {
             "name": "Samuel Williams",
             "email": "sam@badcow.co"
+        },
+        {
+            "name": "Gekkone",
+            "email": "dev@gekkone.tech"
         }
     ],
+    "config": {
+        "allow-plugins": {
+            "bamarni/composer-bin-plugin": true
+        }
+    },
     "require": {
         "php": "~7.2",
         "ext-json": "*",

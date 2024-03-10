@@ -150,6 +150,7 @@ and current working directory on windows.
 * AXFR
 * ANY
 * SRV
+* CAA (since ver. 1.5.0)
 
 ## License
 
