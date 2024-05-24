@@ -75,22 +75,37 @@ class Decoder
                 ->setName(self::decodeDomainName($pkt, $offset));
 
             if ($rr->isQuestion()) {
-                $values = unpack('ntype/nclass', substr($pkt, $offset, 4));
-                $rr->setType($values['type'])->setClass($values['class']);
-                $offset += 4;
-            } else {
-                $values = unpack('ntype/nclass/Nttl/ndlength', substr($pkt, $offset, 10));
-                $rr->setType($values['type'])->setClass($values['class'])->setTtl($values['ttl']);
-                $offset += 10;
-
-                //Ignore unsupported types.
-                try {
-                    $rr->setRdata(RdataDecoder::decodeRdata($rr->getType(), substr($pkt, $offset, $values['dlength'])));
-                } catch (UnsupportedTypeException $e) {
-                    $offset += $values['dlength'];
-                    continue;
+                if (strlen($pkt) < $offset + 4) {
+                    break;
                 }
-                $offset += $values['dlength'];
+
+                $values = unpack('ntype/nclass', substr($pkt, $offset, 4));
+
+                if (is_array($values) && !empty($values['type']) && !empty($values['class'])) {
+                    $rr->setType($values['type'])->setClass($values['class']);
+                    $offset += 4;
+                }
+            } else {
+                if (strlen($pkt) < $offset + 10) {
+                    break;
+                }
+
+                $values = unpack('ntype/nclass/Nttl/ndlength', substr($pkt, $offset, 10));
+
+                if (is_array($values)
+                    && !empty($values['type']) && !empty($values['class']) && !empty($values['ttl'])) {
+                    $rr->setType($values['type'])->setClass($values['class'])->setTtl($values['ttl']);
+                    $offset += 10;
+
+                    //Ignore unsupported types.
+                    try {
+                        $rr->setRdata(RdataDecoder::decodeRdata($rr->getType(), substr($pkt, $offset, $values['dlength'])));
+                    } catch (UnsupportedTypeException $e) {
+                        $offset += $values['dlength'];
+                        continue;
+                    }
+                    $offset += $values['dlength'];
+                }
             }
 
             $resourceRecords[] = $rr;
