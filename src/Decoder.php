@@ -139,7 +139,7 @@ class Decoder
             ->setQuestionCount($data['qdcount'])
             ->setAnswerCount($data['ancount'])
             ->setNameServerCount($data['nscount'])
-            ->setAdditionalRecordsCount($data['qr'] == 0 ? 0 : $data['arcount']);
+            ->setAdditionalRecordsCount($flags['qr'] == 0 ? 0 : $data['arcount']);
     }
 
     /**
